@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SANZ Finance - 3D Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg-main: #0f121c; 
+            --bg-card: #181d2a; 
+            --bg-input: #0f121c; 
+            --text-main: #ffffff; 
+            --text-muted: #8b95a5; 
+            --accent-blue: #3b82f6; 
+            --accent-blue-hover: #2563eb;
+            --accent-green: #10b981; 
+            --accent-red: #ef4444; 
+            --border-color: rgba(255, 255, 255, 0.05); 
+            --shadow-dark: #090b12;
+            --shadow-light: #1f2638;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        
+        body { 
+            background: var(--bg-main); 
+            background-image: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 50%),
+                              radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.1), transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main); min-height: 100vh; 
+            display: flex; align-items: center; justify-content: center; padding: 20px; 
+            padding-bottom: 100px;
+            overflow-x: hidden;
+        }
+        
+        /* --- LOGIN --- */
+        .login-container { 
+            max-width: 420px; width: 100%; 
+            background: var(--bg-card);
+            border-radius: 30px; padding: 45px 35px; 
+            box-shadow: 12px 12px 24px var(--shadow-dark), -8px -8px 24px var(--shadow-light);
+            border: 1px solid var(--border-color);
+            position: relative; z-index: 10;
+        }
+        .login-header { text-align: center; margin-bottom: 35px; }
+        .login-header h1 { font-size: 32px; font-weight: 800; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+        .login-header p { color: var(--text-muted); font-size: 14px; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px;}
+        .input-group input { 
+            width: 100%; padding: 16px; border-radius: 14px; 
+            border: 1px solid var(--border-color); 
+            background: var(--bg-input); color: white; font-size: 15px; transition: 0.3s; 
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+        }
+        .input-group input:focus { outline: none; border-color: var(--accent-blue); box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light), 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        
+        .login-btn { 
+            width: 100%; padding: 16px; background: linear-gradient(135deg, #3b82f6, #2563eb); 
+            color: white; border: none; border-radius: 14px; font-weight: 700; font-size: 16px; 
+            cursor: pointer; transition: 0.2s; 
+            box-shadow: 6px 6px 12px var(--shadow-dark), -4px -4px 12px var(--shadow-light), inset 0 0 0 rgba(255,255,255,0);
+            margin-top: 10px;
+        }
+        .login-btn:active { box-shadow: inset 4px 4px 8px rgba(0,0,0,0.4), inset -2px -2px 6px rgba(255,255,255,0.2); transform: scale(0.98); }
+        .error-msg { color: var(--accent-red); font-size: 14px; margin-top: 15px; text-align: center; display: none; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 10px; }
+
+        /* --- DASHBOARD --- */
+        .dashboard { max-width: 1400px; margin: 0 auto; width: 100%; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+        .header h1 { font-size: 28px; font-weight: 800; color: white; display: flex; align-items: center; text-shadow: 2px 2px 4px var(--shadow-dark); }
+        .header h1 i { color: var(--accent-blue); margin-right: 12px; text-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+        .date-badge { background: var(--bg-card); padding: 12px 22px; border-radius: 14px; box-shadow: 6px 6px 12px var(--shadow-dark), -4px -4px 12px var(--shadow-light); font-weight: 600; font-size: 14px; color: var(--text-muted); border: 1px solid var(--border-color);}
+        .logout-btn { background: var(--bg-card); color: var(--accent-red); border: 1px solid var(--border-color); padding: 12px 22px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 6px 6px 12px var(--shadow-dark), -4px -4px 12px var(--shadow-light);}
+        .logout-btn:active { box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); color: white; background: var(--accent-red); }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+
+        /* --- CARDS --- */
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 30px; }
+        .card { background: var(--bg-card); border-radius: 24px; padding: 28px; border: 1px solid var(--border-color); transition: 0.3s; position: relative; box-shadow: 10px 10px 20px var(--shadow-dark), -5px -5px 15px var(--shadow-light); transform-style: preserve-3d; }
+        .card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 15px 15px 25px var(--shadow-dark), -8px -8px 20px var(--shadow-light); z-index: 2;}
+        .card-icon { width: 55px; height: 55px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 20px; box-shadow: inset 3px 3px 6px rgba(255,255,255,0.05), inset -3px -3px 6px rgba(0,0,0,0.3);}
+        .card-label { color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px; font-size: 13px; text-transform: uppercase;}
+        .card-value { font-size: 30px; font-weight: 800; color: white; margin-bottom: 8px; text-shadow: 2px 2px 4px var(--shadow-dark);}
+
+        /* --- PANEL --- */
+        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-bottom: 30px; }
+        .panel { background: var(--bg-card); border-radius: 24px; padding: 28px; border: 1px solid var(--border-color); box-shadow: 10px 10px 20px var(--shadow-dark), -5px -5px 15px var(--shadow-light); }
+        .panel-title { font-size: 18px; font-weight: 700; color: white; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        .panel-title i { color: var(--accent-blue); font-size: 22px; }
+        canvas { max-height: 300px; width: 100% !important; filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.5)); }
+
+        /* FORM */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); font-size: 13px; text-transform: uppercase;}
+        .form-group input, .form-group select { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-input); color: white; font-size: 15px; transition: 0.3s; box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);}
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent-blue); box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light), 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        .btn-primary { width: 100%; padding: 18px; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; margin-top: 10px; box-shadow: 6px 6px 12px var(--shadow-dark), -4px -4px 12px var(--shadow-light);}
+        .btn-primary:active { box-shadow: inset 4px 4px 8px rgba(0,0,0,0.4), inset -2px -2px 6px rgba(255,255,255,0.2); transform: scale(0.98); }
+
+        /* TABLE */
+        .transactions-table { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; padding: 15px 15px; color: var(--text-muted); font-weight: 600; border-bottom: 2px solid var(--border-color); font-size: 13px; text-transform: uppercase; letter-spacing: 1px;}
+        td { padding: 18px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.03); font-size: 15px; color: #d1d5db; }
+        .badge-income { background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);}
+        .badge-expense { background: rgba(239, 68, 68, 0.15); color: #f87171; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);}
+        .action-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 20px; transition: 0.2s; }
+        .action-btn:hover { color: var(--accent-red); transform: scale(1.2); text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+
+        /* --- KALKULATOR 3D --- */
+        .calc-container { max-width: 600px; margin: 0 auto; background: var(--bg-card); border-radius: 30px; padding: 40px; border: 1px solid var(--border-color); box-shadow: 15px 15px 30px var(--shadow-dark), -10px -10px 25px var(--shadow-light); }
+        .calc-display { background: var(--bg-input); border-radius: 20px; padding: 30px; text-align: right; font-size: 42px; font-weight: 800; margin-bottom: 30px; border: 1px solid var(--border-color); color: var(--accent-blue); letter-spacing: 2px; word-wrap: break-word; min-height: 120px; display: flex; align-items: flex-end; justify-content: flex-end; box-shadow: inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light); text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);}
+        .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+        .calc-btn { background: var(--bg-card); border: 1px solid var(--border-color); padding: 25px 0; border-radius: 20px; font-weight: 700; font-size: 28px; color: white; cursor: pointer; transition: 0.1s; box-shadow: 6px 6px 12px var(--shadow-dark), -4px -4px 10px var(--shadow-light);}
+        .calc-btn:active { box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -3px -3px 8px var(--shadow-light); transform: scale(0.95); color: var(--accent-blue); }
+        .calc-btn.operator { color: var(--accent-blue); text-shadow: 0 0 10px rgba(59,130,246,0.5); }
+        .calc-btn.equals { background: linear-gradient(135deg, #10b981, #059669); color: white; grid-column: span 2; border: none; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
+        .calc-btn.equals:active { box-shadow: inset 4px 4px 8px rgba(0,0,0,0.4); transform: scale(0.95);}
+        .calc-btn.clear { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; grid-column: span 2; border: none; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);}
+        .calc-btn.clear:active { box-shadow: inset 4px 4px 8px rgba(0,0,0,0.4); transform: scale(0.95);}
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: var(--bg-card); backdrop-filter: blur(15px); border: 1px solid var(--border-color); border-radius: 25px; display: flex; justify-content: space-around; padding: 15px 10px; z-index: 1000; box-shadow: 10px 10px 25px var(--shadow-dark), -5px -5px 15px var(--shadow-light);}
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); cursor: pointer; transition: 0.3s; text-decoration: none; padding: 10px 25px; border-radius: 16px;}
+        .nav-item i { font-size: 24px; margin-bottom: 5px; transition: 0.3s; }
+        .nav-item span { font-size: 13px; font-weight: 600; }
+        .nav-item:hover { color: white; }
+        .nav-item.active { color: var(--accent-blue); box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); background: var(--bg-input);}
+        .nav-item.active i { transform: translateY(-2px); text-shadow: 0 0 15px rgba(59, 130, 246, 0.6); }
+
+        .loading-text { text-align: center; color: var(--accent-blue); font-weight: bold; margin: 20px 0; display: none; font-size: 18px; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);}
+
+        @media (max-width: 900px) { 
+            .main-grid { grid-template-columns: 1fr; } 
+            .calc-btn { padding: 20px 0; font-size: 24px; border-radius: 16px;}
+            .calc-display { font-size: 32px; padding: 20px; min-height: 100px; border-radius: 16px;}
+            .calc-container { padding: 25px; border-radius: 24px;}
+            .bottom-nav { width: 95%; padding: 10px 5px; }
+            .nav-item { padding: 10px 15px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" style="width:100%; display: flex; justify-content: center;">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>⚡ SANZ Finance</h1>
+                <p>Premium 3D Dashboard Access</p>
+            </div>
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="masukkan username" value="admin">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="••••••••" value="admin123">
+            </div>
+            <button class="login-btn" onclick="handleLogin()">
+                <i class="fas fa-sign-in-alt" style="margin-right:8px;"></i> Login Secure
+            </button>
+            <div class="error-msg" id="loginError">Username/password salah!</div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD WRAPPER -->
+    <div id="dashboardPage" style="display:none; width:100%;">
+        <div class="dashboard">
+            
+            <div class="header">
+                <h1><i class="fas fa-bolt"></i>SANZ Finance</h1>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="date-badge"><i class="far fa-calendar-alt" style="margin-right: 8px;"></i><span id="currentDate"></span></div>
+                    <button class="logout-btn" onclick="logout()"><i class="fas fa-power-off"></i> Keluar</button>
+                </div>
+            </div>
+
+            <div class="loading-text" id="loadingText"><i class="fas fa-spinner fa-spin"></i> Sinkronisasi Database...</div>
+
+            <!-- TAB DASHBOARD -->
+            <div id="tab-dashboard" class="tab-content active">
+                <div class="summary-cards" id="summaryCards">
+                    <div class="card">
+                        <div class="card-icon" style="background:rgba(59, 130, 246, 0.1); color:#60a5fa;"><i class="fas fa-wallet"></i></div>
+                        <div class="card-label">Total Saldo</div>
+                        <div class="card-value" id="totalSaldo">Rp 0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="background:rgba(16, 185, 129, 0.1); color:#34d399;"><i class="fas fa-arrow-down"></i></div>
+                        <div class="card-label">Pemasukan</div>
+                        <div class="card-value" id="totalPemasukan">Rp 0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="background:rgba(239, 68, 68, 0.1); color:#f87171;"><i class="fas fa-arrow-up"></i></div>
+                        <div class="card-label">Pengeluaran</div>
+                        <div class="card-value" id="totalPengeluaran">Rp 0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="background:rgba(245, 158, 11, 0.1); color:#fbbf24;"><i class="fas fa-piggy-bank"></i></div>
+                        <div class="card-label">Simpanan Darurat</div>
+                        <div class="card-value" id="simpanan">Rp 0</div>
+                    </div>
+                </div>
+
+                <div class="main-grid">
+                    <div class="panel">
+                        <div class="panel-title"><i class="fas fa-chart-line"></i> Analitik Cashflow</div>
+                        <canvas id="incomeExpenseChart"></canvas>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title"><i class="fas fa-cloud-upload-alt" style="color:var(--accent-green);"></i> Input Transaksi</div>
+                        <div class="form-group">
+                            <label>Keterangan</label>
+                            <input type="text" id="descInput" placeholder="Contoh: uang jajan Sansan...">
+                        </div>
+                        <div class="form-group">
+                            <label>Nominal (Rp)</label>
+                            <input type="number" id="amountInput" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Klasifikasi</label>
+                            <select id="typeInput">
+                                <option value="income">Pemasukan (+)</option>
+                                <option value="expense">Pengeluaran (-)</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary" onclick="addTransaction()">
+                            <i class="fas fa-check" style="margin-right:8px;"></i>Simpan ke Database
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel transactions-table">
+                    <div class="panel-title" style="margin-bottom:15px;"><i class="fas fa-history"></i> Log Transaksi (Live)</div>
+                    <table>
+                        <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Nominal</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody id="transactionBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB KALKULATOR -->
+            <div id="tab-kalkulator" class="tab-content">
+                <div class="calc-container">
+                    <div class="panel-title" style="justify-content: center; font-size: 24px; margin-bottom: 30px;"><i class="fas fa-calculator"></i> Smart Calculator 3D</div>
+                    <div class="calc-display" id="calcDisplay">0</div>
+                    <div class="calc-buttons">
+                        <button class="calc-btn" onclick="calcAppend('7')">7</button>
+                        <button class="calc-btn" onclick="calcAppend('8')">8</button>
+                        <button class="calc-btn" onclick="calcAppend('9')">9</button>
+                        <button class="calc-btn operator" onclick="calcSetOperator('/')">÷</button>
+                        
+                        <button class="calc-btn" onclick="calcAppend('4')">4</button>
+                        <button class="calc-btn" onclick="calcAppend('5')">5</button>
+                        <button class="calc-btn" onclick="calcAppend('6')">6</button>
+                        <button class="calc-btn operator" onclick="calcSetOperator('*')">×</button>
+                        
+                        <button class="calc-btn" onclick="calcAppend('1')">1</button>
+                        <button class="calc-btn" onclick="calcAppend('2')">2</button>
+                        <button class="calc-btn" onclick="calcAppend('3')">3</button>
+                        <button class="calc-btn operator" onclick="calcSetOperator('-')">−</button>
+                        
+                        <button class="calc-btn" onclick="calcAppend('0')">0</button>
+                        <button class="calc-btn" onclick="calcAppend('00')">00</button>
+                        <button class="calc-btn" onclick="calcAddDot()">.</button>
+                        <button class="calc-btn operator" onclick="calcSetOperator('+')">+</button>
+                        
+                        <button class="calc-btn clear" onclick="calcClear()">C</button>
+                        <button class="calc-btn equals" onclick="calcCalculate()">=</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION BAR -->
+    <div class="bottom-nav" id="bottomNav" style="display: none;">
+        <div class="nav-item active" onclick="switchTab('dashboard')" id="nav-dashboard">
+            <i class="fas fa-chart-pie"></i>
+            <span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('kalkulator')" id="nav-kalkulator">
+            <i class="fas fa-calculator"></i>
+            <span>Kalkulator</span>
+        </div>
+    </div>
+
+    <!-- FIREBASE SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // ⚠️ GANTI CONFIG FIREBASE LU DI SINI ⚠️
+        const firebaseConfig = {
+  apiKey: "AIzaSyCst6Z0vJS5b2hYNiXzUE0dhn-B4GEl10s",
+  authDomain: "sanz-finance.firebaseapp.com",
+  projectId: "sanz-finance",
+  storageBucket: "sanz-finance.firebasestorage.app",
+  messagingSenderId: "223406410842",
+  appId: "1:223406410842:web:ec70abc6a5e6ac29671c63",
+  measurementId: "G-KCR5Z04ELP"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const transRef = collection(db, "transactions");
+
+        let transactions = [];
+        let chart;
+
+        window.switchTab = function(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('nav-' + tabName).classList.add('active');
+        }
+
+        window.handleLogin = function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === 'admin' && password === 'admin123') {
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('dashboardPage').style.display = 'block';
+                document.getElementById('bottomNav').style.display = 'flex';
+                document.getElementById('loginError').style.display = 'none';
+                document.getElementById('currentDate').innerText = new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+                document.getElementById('loadingText').style.display = 'block';
+                tarikDataFirebase();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        window.logout = function() {
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('dashboardPage').style.display = 'none';
+            document.getElementById('bottomNav').style.display = 'none';
+        }
+
+        function tarikDataFirebase() {
+            const q = query(transRef, orderBy("timestamp", "desc"));
+            onSnapshot(q, (snapshot) => {
+                transactions = [];
+                snapshot.forEach((doc) => {
+                    transactions.push({ id: doc.id, ...doc.data() });
+                });
+                document.getElementById('loadingText').style.display = 'none';
+                refreshUI();
+            });
+        }
+
+        window.addTransaction = async function() {
+            const desc = document.getElementById('descInput').value.trim();
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            const type = document.getElementById('typeInput').value;
+            
+            if (!desc || isNaN(amount) || amount <= 0) {
+                alert('Data tidak valid! Isi semua kolom.');
+                return;
+            }
+
+            try {
+                await addDoc(transRef, {
+                    date: new Date().toISOString().slice(0,10),
+                    timestamp: Date.now(),
+                    desc: desc,
+                    amount: amount,
+                    type: type
+                });
+                document.getElementById('descInput').value = '';
+                document.getElementById('amountInput').value = '';
+            } catch (error) {
+                console.error("Error: ", error);
+                alert("Gagal simpan ke database.");
+            }
+        }
+
+        window.deleteTransaction = async function(id) {
+            if(confirm("Yakin mau hapus data ini?")) {
+                try { await deleteDoc(doc(db, "transactions", id)); } catch (error) { console.error("Gagal hapus: ", error); }
+            }
+        }
+
+        function formatRupiah(num) { return 'Rp ' + num.toLocaleString('id-ID'); }
+
+        function refreshUI() {
+            let totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            let totalExpense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            let balance = totalIncome - totalExpense;
+
+            document.getElementById('totalSaldo').innerText = formatRupiah(balance);
+            document.getElementById('totalPemasukan').innerText = formatRupiah(totalIncome);
+            document.getElementById('totalPengeluaran').innerText = formatRupiah(totalExpense);
+            document.getElementById('simpanan').innerText = formatRupiah(balance * 0.2);
+
+            const tbody = document.getElementById('transactionBody');
+            tbody.innerHTML = '';
+            transactions.forEach(t => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${t.date}</td>
+                    <td style="font-weight:600; color:white;">${t.desc}</td>
+                    <td style="font-family:monospace; font-size:16px; font-weight:600;">${formatRupiah(t.amount)}</td>
+                    <td><span class="${t.type === 'income' ? 'badge-income' : 'badge-expense'}">${t.type === 'income' ? 'IN' : 'OUT'}</span></td>
+                    <td><button class="action-btn" onclick="deleteTransaction('${t.id}')"><i class="fas fa-trash-alt"></i></button></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            updateCharts();
+        }
+
+        function updateCharts() {
+            const months = ['Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'];
+            const incomeData = [0,0,0,0,0,0];
+            const expenseData = [0,0,0,0,0,0];
+            
+            transactions.forEach(t => {
+                const monthIndex = new Date(t.date).getMonth();
+                if (monthIndex >= 1 && monthIndex <= 6) {
+                    if (t.type === 'income') incomeData[monthIndex-1] += t.amount;
+                    else expenseData[monthIndex-1] += t.amount;
+                }
+            });
+
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('incomeExpenseChart').getContext('2d');
+            
+            let gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
+            gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 0.8)'); 
+            gradientBlue.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
+            
+            let gradientRed = ctx.createLinearGradient(0, 0, 0, 400);
+            gradientRed.addColorStop(0, 'rgba(239, 68, 68, 0.8)'); 
+            gradientRed.addColorStop(1, 'rgba(239, 68, 68, 0.1)');
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: months, datasets: [
+                    { label: 'Pemasukan', data: incomeData, backgroundColor: gradientBlue, borderRadius: 8 },
+                    { label: 'Pengeluaran', data: expenseData, backgroundColor: gradientRed, borderRadius: 8 }
+                ]},
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#9ca3af', font: {family: 'Outfit', weight:'bold'} } } },
+                    scales: { 
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: {weight:'600'} } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af', callback: v => 'Rp ' + v.toLocaleString(), font: {weight:'600'} } } 
+                    }
+                }
+            });
+        }
+
+        // ==================== LOGIKA KALKULATOR BARU ====================
+        let calcExpression = ''; // Nyimpen string rumus (misal: "1+1")
+        let isEvaluated = false; // Cek apakah baru aja pencet sama dengan
+
+        window.updateDisplay = function() { 
+            // Kalo kosong, tampilin 0
+            document.getElementById('calcDisplay').innerText = calcExpression === '' ? '0' : calcExpression; 
+        }
+
+        window.calcAppend = function(num) {
+            if (isEvaluated) {
+                calcExpression = ''; // Reset kalo abis pencet =
+                isEvaluated = false;
+            }
+            // Cegah angka 0 di depan (misal 01 jadi 1)
+            if (calcExpression === '0' && num !== '.' && num !== '00') {
+                calcExpression = num;
+            } else if (calcExpression === '' && num === '00') {
+                calcExpression = '0';
+            } else {
+                calcExpression += num;
+            }
+            updateDisplay();
+        }
+
+        window.calcAddDot = function() {
+            if (isEvaluated) {
+                calcExpression = '0';
+                isEvaluated = false;
+            }
+            // Cari angka terakhir, cek udah ada titik belum
+            const parts = calcExpression.split(/[\+\-\*\/]/);
+            const lastPart = parts[parts.length - 1];
+            if (!lastPart.includes('.')) {
+                if (lastPart === '') calcExpression += '0.';
+                else calcExpression += '.';
+            }
+            updateDisplay();
+        }
+
+        window.calcSetOperator = function(op) {
+            if (isEvaluated) isEvaluated = false;
+            
+            if (calcExpression === '') {
+                if (op === '-') calcExpression = '-'; // Boleh minus di awal
+            } else {
+                const lastChar = calcExpression.slice(-1);
+                // Kalo terakhir udah operator, ganti operatornya
+                if (['+', '-', '*', '/'].includes(lastChar)) {
+                    calcExpression = calcExpression.slice(0, -1) + op;
+                } else {
+                    calcExpression += op;
+                }
+            }
+            updateDisplay();
+        }
+
+        window.calcCalculate = function() {
+            if (calcExpression === '') return;
+            
+            try {
+                // Ganti simbol x dan ÷ jadi * dan /
+                let evalString = calcExpression.replace(/×/g, '*').replace(/÷/g, '/');
+                
+                // Hitung pake eval (aman karena cuma angka & operator)
+                let result = eval(evalString);
+                
+                // Bulatkan kalo desimalnya kepanjangan
+                if (result % 1 !== 0) {
+                    result = parseFloat(result.toFixed(4));
+                }
+
+                calcExpression = result.toString();
+                isEvaluated = true;
+                updateDisplay();
+            } catch (error) {
+                document.getElementById('calcDisplay').innerText = 'Error';
+                calcExpression = '';
+            }
+        }
+
+        window.calcClear = function() { 
+            calcExpression = ''; 
+            isEvaluated = false; 
+            updateDisplay(); 
+        }
+
+        window.onload = function() {
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('dashboardPage').style.display = 'none';
+            document.getElementById('bottomNav').style.display = 'none';
+        };
+    </script>
+</body>
+</html>
